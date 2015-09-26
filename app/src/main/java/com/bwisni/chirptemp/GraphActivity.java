@@ -25,7 +25,7 @@ public class GraphActivity extends Activity {
 		
 		int temperature = getIntent().getIntExtra("temperature", 0);
 		int numChirps = getIntent().getIntExtra("numChirps", 0);
-		int numSeconds = getIntent().getIntExtra("numSeconds", 0);
+		double numSeconds = getIntent().getDoubleExtra("numSeconds", 0);
 		boolean isF = getIntent().getBooleanExtra("isF", true);
 		
 		String temp = "Temperature: "+temperature;

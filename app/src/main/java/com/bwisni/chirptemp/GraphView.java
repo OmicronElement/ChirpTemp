@@ -15,7 +15,7 @@ public class GraphView extends View {
 	private Paint temperaturePaint;
 	private Paint textPaint;
 	
-	private int numSeconds;
+	private double numSeconds;
 	private int numChirps;
 	private int temperature;
 	
@@ -74,19 +74,19 @@ public class GraphView extends View {
 	private void init(){
 		secondsPaint = new Paint(Paint.DITHER_FLAG);
 		secondsPaint.setStyle(Paint.Style.FILL);
-		secondsPaint.setColor(Color.RED);
+		secondsPaint.setColor(getResources().getColor(android.R.color.holo_blue_dark));
         secondsPaint.setTextSize(50);
         secondsPaint.setTextAlign(Align.CENTER);
 
 		chirpsPaint = new Paint(Paint.DITHER_FLAG);
 		chirpsPaint.setStyle(Paint.Style.FILL);
-		chirpsPaint.setColor(Color.GREEN);
+		chirpsPaint.setColor(getResources().getColor(android.R.color.holo_blue_light));
         chirpsPaint.setTextSize(50);
         chirpsPaint.setTextAlign(Align.CENTER);
 		
 		temperaturePaint = new Paint(Paint.DITHER_FLAG);
 		temperaturePaint.setStyle(Paint.Style.FILL);
-		temperaturePaint.setColor(Color.BLUE);
+		temperaturePaint.setColor(getResources().getColor(android.R.color.holo_blue_bright));
         temperaturePaint.setTextSize(50);
         temperaturePaint.setTextAlign(Align.CENTER);
 		
@@ -96,11 +96,11 @@ public class GraphView extends View {
 		textPaint.setColor(Color.BLACK);
 	}
 
-	public int getNumSeconds() {
+	public double getNumSeconds() {
 		return numSeconds;
 	}
 
-	public void setNumSeconds(int numSeconds) {
+	public void setNumSeconds(double numSeconds) {
 		this.numSeconds = numSeconds;
 	}
 

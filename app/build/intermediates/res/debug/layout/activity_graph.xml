@@ -13,15 +13,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textColor="@color/Blue"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textColor="@android:color/holo_blue_bright"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false" />
 
     <TextView
         android:id="@+id/graphChirps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/graphTemp"
-        android:textColor="@color/Green"
+        android:textColor="@android:color/holo_blue_light"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -30,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/graphChirps"
         android:layout_below="@+id/graphChirps"
-        android:textColor="@color/Red"
+        android:textColor="@android:color/holo_blue_dark"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <com.bwisni.chirptemp.GraphView

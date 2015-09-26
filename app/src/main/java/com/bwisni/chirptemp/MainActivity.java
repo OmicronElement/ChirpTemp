@@ -14,10 +14,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 public class MainActivity extends Activity {
 
     public static final int CALC_REQUEST_CODE = 0;
     public static final char DEGREE = '\u00B0';
+    public static final int MILLISECONDS_F = 14000;
+    public static final int MILLISECONDS_C = 25000;
 
     // Fields
     private TextView temperatureText;
@@ -38,8 +41,8 @@ public class MainActivity extends Activity {
     private double numSeconds;
     private int temperature;
 
-    private boolean inFahrenheit;
-    private boolean chronometerRunning;
+    private boolean inFahrenheit = true;
+    private boolean chronometerRunning = false;
 
 
 
@@ -75,16 +78,17 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                // Start chronometer when the button is pressed for the first time
-                if (numChirps == 0) {
-                    startChronometer();
 
-                    // Set seconds too
+                if (numChirps == 0) {
+                    // Set seconds for calculation
                     if (isInFahrenheit()) {
                         setSeconds(14);
                     } else {
                         setSeconds(25);
                     }
+
+                    // Start chronometer when the button is pressed for the first time
+                    startChronometer();
                 }
 
                 setNumChirps(getNumChirps() + 1);
@@ -154,6 +158,7 @@ public class MainActivity extends Activity {
             public void onClick(View arg0) {
 
                 if (isInFahrenheit()) {
+
                     temperatureText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
 
                     tempToggle.setTextColor(getResources().getColor(android.R.color.holo_red_light));
@@ -162,6 +167,7 @@ public class MainActivity extends Activity {
                     setInFahrenheit(false);
 
                 } else {
+
                     temperatureText.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
 
                     tempToggle.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -247,21 +253,21 @@ public class MainActivity extends Activity {
                 long elapsedMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
 
                 if (isInFahrenheit()) {
-                    setCountdownText(elapsedMillis);
-
                     // Stop the timer, disable the Chirp button, and calculate the temperature once we reach 14 seconds
-                    if (elapsedMillis >= 14000) {
+                    if (elapsedMillis >= MILLISECONDS_F) {
                         stopChronometer();
                         calculateTemperature();
                     }
+
+                    setCountdownText(elapsedMillis, MILLISECONDS_F);
 
                 } else {
-                    setCountdownText(elapsedMillis);
-
-                    if (elapsedMillis >= 25000) {
+                    if (elapsedMillis >= MILLISECONDS_C) {
                         stopChronometer();
                         calculateTemperature();
                     }
+
+                    setCountdownText(elapsedMillis, MILLISECONDS_C);
                 }
 
 
@@ -272,10 +278,10 @@ public class MainActivity extends Activity {
     }
 
     // Builds formatted SpannableString showing remaining seconds and milliseconds,
-    // then assigns it to the countdown text view
-    private void setCountdownText(long elapsedMillis) {
-        int secondsLeft = (int) (14000 - elapsedMillis) / 1000;
-        int millisecondsLeft = (int) (14000 - elapsedMillis - secondsLeft*1000) / 100;
+    // then assigns it to the countdown TextView
+    private void setCountdownText(long elapsedMillis, int baseMillis) {
+        int secondsLeft = (int) (baseMillis - elapsedMillis) / 1000;
+        int millisecondsLeft = (int) (baseMillis - elapsedMillis - secondsLeft * 1000) / 100;
 
         String ssLeft = Long.toString(secondsLeft);
         SpannableStringBuilder ss = new SpannableStringBuilder(ssLeft);
@@ -352,26 +358,15 @@ public class MainActivity extends Activity {
         chronometer.stop();
         setChronometerRunning(false);
 
-        tempToggle.setEnabled(true);
-        /*
-        if (isInFahrenheit()) {
-            temperatureText.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
-            toggle.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
-            toggle.setText("F");
-        }
-        else {
-            temperatureText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-            toggle.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-            toggle.setText("C");
-        }
-        */
+        calculateTemperature();
+
         countdownText.setVisibility(View.GONE);
         temperatureText.setVisibility(View.VISIBLE);
+
         tempToggle.setVisibility(View.VISIBLE);
+        tempToggle.setEnabled(true);
 
         chirpButton.setEnabled(false);
-
-        calculateTemperature();
     }
     
     protected void calculateTemperature() {
@@ -494,7 +489,7 @@ public class MainActivity extends Activity {
             }
             
             // Check if the chirp button is disabled
-            if(savedInstanceState.getBoolean("chirpButtonEnabled") == false){
+            if(!savedInstanceState.getBoolean("chirpButtonEnabled")){
                 chirpButton.setEnabled(false);
             }
         }
