@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ChirpTemp</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="bigButton">Chirp</string>
+    <string name="numOfChirps"># of chirps</string>
+    <string name="seconds">seconds</string>
+    <string name="in">in</string>
+    <string name="calculatedTemp">79°</string>
+    <string name="temperature">Temperature</string>
+    <string name="C">Celsius</string>
+    <string name="F">Fahrenheit</string>
+    <string name="chron">Chronometer</string>
+    <string name="calc">Calculate</string>
+    <string name="reset">Reset</string>
+    <string name="title_activity_graph">Data</string>
+    <string name="title">Data</string>
+    <string name="viewGraphString">View Graph</string>
+    <string name="viewDataButton">View Data</string>
+    <string name="title_activity_calculator">Calculator</string>
+    <string name="chirps">Chirps</string>
+    <string name="unit">F</string>
+    <string name="Seconds">Seconds</string>
+
+</resources>
