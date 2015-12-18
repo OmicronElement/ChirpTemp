@@ -30,15 +30,15 @@ public class MainActivity extends Activity {
     
     private Button chirpButton;
     private Button resetButton;
-    
+
     private Chronometer chronometer;
 
     private TextView tempToggle;
     private TextView countdownText;
     
     // Stored values
-    private int numChirps;
-    private double numSeconds;
+    private long numChirps;
+    private long numSeconds;
     private int temperature;
 
     private boolean inFahrenheit = true;
@@ -286,7 +286,7 @@ public class MainActivity extends Activity {
         String ssLeft = Long.toString(secondsLeft);
         SpannableStringBuilder ss = new SpannableStringBuilder(ssLeft);
 
-        ss.append("." + Long.toString(millisecondsLeft));
+        ss.append(".").append(Long.toString(millisecondsLeft));
         // Set milliseconds to appear in smaller font. Strings added to the beginning are EXCLUDED,
         // any appended after are INCLUDED
         ss.setSpan(new RelativeSizeSpan(0.75f), ssLeft.length(), ss.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -330,7 +330,7 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == CALC_REQUEST_CODE && resultCode == RESULT_OK && intent != null) {
             // Return from calculator popup, recalculate
-            setNumSeconds(intent.getDoubleExtra("numSeconds", 0));
+            setNumSeconds(intent.getLongExtra("numSeconds", 0));
             setNumChirps(intent.getIntExtra("numChirps", 0));
             calculateTemperature();
             chirpButton.setEnabled(false);
@@ -416,19 +416,19 @@ public class MainActivity extends Activity {
     }
     
     
-    public int getNumChirps() {
+    public long getNumChirps() {
         return numChirps;
     }
 
-    private void setNumChirps(int numChirps) {
+    private void setNumChirps(long numChirps) {
         this.numChirps = numChirps;
     }
 
-    public double getNumSeconds() {
+    public long getNumSeconds() {
         return numSeconds;
     }
 
-    private void setNumSeconds(double numSeconds) {
+    private void setNumSeconds(long numSeconds) {
         this.numSeconds = numSeconds;
     }
 
