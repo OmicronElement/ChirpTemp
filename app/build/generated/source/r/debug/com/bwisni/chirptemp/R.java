@@ -37,31 +37,33 @@ public final class R {
     }
     public static final class id {
         public static final int CalculatorActivityLayout=0x7f0a0000;
-        public static final int action_calc=0x7f0a0018;
-        public static final int action_graph=0x7f0a0017;
-        public static final int action_settings=0x7f0a0019;
-        public static final int cRadio=0x7f0a0013;
+        public static final int action_calc=0x7f0a001a;
+        public static final int action_graph=0x7f0a0019;
+        public static final int action_settings=0x7f0a001b;
+        public static final int cRadio=0x7f0a0015;
         public static final int calcButton=0x7f0a0001;
         public static final int chirpButton=0x7f0a000f;
         public static final int chirps=0x7f0a0004;
         public static final int chirpsInput=0x7f0a0003;
-        public static final int chrono=0x7f0a0010;
+        public static final int chrono=0x7f0a0012;
         public static final int chronoText=0x7f0a000c;
-        public static final int chronometer=0x7f0a0015;
+        public static final int chronometer=0x7f0a0017;
         public static final int editText=0x7f0a0006;
-        public static final int fRadio=0x7f0a0012;
+        public static final int fRadio=0x7f0a0014;
         public static final int graphChirps=0x7f0a0008;
-        public static final int graphSecs=0x7f0a0009;
         public static final int graphTemp=0x7f0a0007;
         public static final int graphView=0x7f0a000a;
-        public static final int radioGroup1=0x7f0a0011;
+        public static final int playButton=0x7f0a0011;
+        public static final int radioGroup1=0x7f0a0013;
+        public static final int recordButton=0x7f0a0010;
         public static final int resetButton=0x7f0a000e;
         public static final int scaleToggle=0x7f0a000d;
         public static final int seconds=0x7f0a0005;
         public static final int secondsInput=0x7f0a0002;
         public static final int temperature=0x7f0a000b;
-        public static final int textView4=0x7f0a0014;
-        public static final int viewGraphButton=0x7f0a0016;
+        public static final int textView4=0x7f0a0016;
+        public static final int title=0x7f0a0009;
+        public static final int viewGraphButton=0x7f0a0018;
     }
     public static final class layout {
         public static final int activity_calculator=0x7f040000;

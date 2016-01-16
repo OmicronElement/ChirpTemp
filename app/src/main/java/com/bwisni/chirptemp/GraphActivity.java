@@ -19,7 +19,7 @@ public class GraphActivity extends Activity {
 		
 		graphTemp = (TextView) findViewById(R.id.graphTemp);
 		graphChirps = (TextView) findViewById(R.id.graphChirps);
-		graphSecs = (TextView) findViewById(R.id.graphSecs);
+		graphSecs = (TextView) findViewById(R.id.title);
 		
 		graph = (GraphView) findViewById(R.id.graphView);
 		

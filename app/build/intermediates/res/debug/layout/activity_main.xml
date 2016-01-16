@@ -15,7 +15,7 @@
         android:weightSum="1">
 
         <TextView
-            android:id="@+id/graphSecs"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -33,8 +33,8 @@
                 android:id="@+id/temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/graphSecs"
-                android:layout_below="@+id/graphSecs"
+                android:layout_alignLeft="@+id/title"
+                android:layout_below="@+id/title"
                 android:text="@string/calculatedTemp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/holo_blue_light"
@@ -44,8 +44,8 @@
                 android:id="@+id/chronoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/graphSecs"
-                android:layout_below="@+id/graphSecs"
+                android:layout_alignLeft="@+id/title"
+                android:layout_below="@+id/title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="@dimen/tempSize"
@@ -56,14 +56,14 @@
                 android:id="@+id/scaleToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/graphSecs"
+                android:layout_below="@+id/title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/holo_blue_light"
                 android:textSize="@dimen/tempSize"
                 android:text="@string/unit"
                 android:layout_toLeftOf="@+id/calcButton"
-                android:layout_toRightOf="@+id/graphSecs"
-                android:layout_toEndOf="@+id/graphSecs" />
+                android:layout_toRightOf="@+id/title"
+                android:layout_toEndOf="@+id/title" />
 
         </LinearLayout>
 
@@ -81,6 +81,20 @@
                 android:layout_alignLeft="@+id/chirpButton"
                 android:layout_alignTop="@+id/chirpButton"
                 android:text="@string/reset" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Record"
+                android:id="@+id/recordButton" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Play"
+                android:id="@+id/playButton" />
         </LinearLayout>
 
         <Button

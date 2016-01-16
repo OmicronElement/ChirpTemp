@@ -26,7 +26,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/graphSecs"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/graphChirps"
@@ -38,7 +38,7 @@
         android:id="@+id/graphView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/graphSecs"
-        android:layout_below="@+id/graphSecs" />
+        android:layout_alignLeft="@+id/title"
+        android:layout_below="@+id/title" />
     
     </RelativeLayout>
