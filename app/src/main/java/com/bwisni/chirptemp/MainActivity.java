@@ -23,8 +23,8 @@ import java.io.IOException;
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
-    public static final int CALC_REQUEST_CODE = 0;
     public static final char DEGREE = '\u00B0';
+    public static final int CALC_REQUEST_CODE = 0;
     public static final int MILLISECONDS_F = 14000;
     public static final int MILLISECONDS_C = 25000;
 
