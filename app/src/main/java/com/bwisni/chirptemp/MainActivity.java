@@ -1,6 +1,9 @@
 package com.bwisni.chirptemp;
 
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.app.Activity;
 import android.content.Intent;
@@ -14,28 +17,38 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 
 public class MainActivity extends Activity {
 
-    public static final int CALC_REQUEST_CODE = 0;
+    private static final String TAG = "MainActivity";
     public static final char DEGREE = '\u00B0';
+    public static final int CALC_REQUEST_CODE = 0;
     public static final int MILLISECONDS_F = 14000;
     public static final int MILLISECONDS_C = 25000;
 
     // Fields
     private TextView temperatureText;
-    
+
     //private EditText chirpsInput;
     //private EditText secondsInput;
-    
+
     private Button chirpButton;
     private Button resetButton;
+    private Button recordButton;
+    private Button playButton;
 
     private Chronometer chronometer;
 
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer mPlayer = null;
+    private String mFileName;
+
     private TextView tempToggle;
     private TextView countdownText;
-    
+    private TextView title;
+
     // Stored values
     private long numChirps;
     private long numSeconds;
@@ -43,6 +56,8 @@ public class MainActivity extends Activity {
 
     private boolean inFahrenheit = true;
     private boolean chronometerRunning = false;
+    private boolean mStartRecording = true;
+    private boolean mStartPlaying = true;
 
 
 
@@ -50,18 +65,26 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+        // Setup local storage filename
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/chirps.3gp";
+
         // Get the external interface components
         temperatureText = (TextView) findViewById(R.id.temperature);
-        
+        title = (TextView) findViewById(R.id.title);
+
+
         chirpButton = (Button) findViewById(R.id.chirpButton);
         resetButton = (Button) findViewById(R.id.resetButton);
+        recordButton = (Button) findViewById(R.id.recordButton);
+        playButton = (Button) findViewById(R.id.playButton);
 
         chronometer = (Chronometer) findViewById(R.id.chrono);
 
         tempToggle = (TextView) findViewById(R.id.scaleToggle);
         countdownText = (TextView) findViewById(R.id.chronoText);
-        
+
         // Init values
         setChirps(0);
         setSeconds(14); // 14 seconds used by default for Fahrenheit calculation
@@ -72,7 +95,7 @@ public class MainActivity extends Activity {
         // Init chronometer
         //chronometer.setText("%s");
         //chronometer.setFormat("SS");
-        
+
         // Chirp button pressed
         chirpButton.setOnClickListener(new View.OnClickListener() {
 
@@ -95,7 +118,7 @@ public class MainActivity extends Activity {
                 //setChirps(getNumChirps());
             }
         });
-        
+
         // Reset button
         resetButton.setOnClickListener(new View.OnClickListener() {
 
@@ -115,42 +138,53 @@ public class MainActivity extends Activity {
             }
         });
 
-        /*
-        // Calculate button
-        calcButton.setOnClickListener(new View.OnClickListener() {
+        // Record button
+        recordButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                calculateTemperature();
-            }
+                // Restore all values to their default
+                setChirps(0);
+                setTemperature(0);
 
+
+                stopChronometer();
+                chronometer.setBase(SystemClock.elapsedRealtime());
+
+
+                onRecord(mStartRecording);
+                if (mStartRecording) {
+                    recordButton.setText("Stop");
+                } else {
+                    recordButton.setText("Record");
+                }
+
+                mStartRecording = !mStartRecording;
+
+                // Re-enable Chirp button
+                chirpButton.setEnabled(false);
+            }
         });
 
+        // play button
+        playButton.setOnClickListener(new View.OnClickListener() {
 
-        // Fahrenheit radio button selected
-        fRadio.setOnClickListener(new View.OnClickListener() {
-            
             @Override
             public void onClick(View arg0) {
-                setInFahrenheit(true);
-                //setSeconds(14);
-                temperatureText.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
-                calculateTemperature();
+
+                onPlay(mStartPlaying);
+                if (mStartPlaying) {
+                    playButton.setText("Stop");
+                } else {
+                    playButton.setText("Play");
+                }
+
+                mStartPlaying = !mStartPlaying;
+
+                // Re-enable Chirp button
+                chirpButton.setEnabled(false);
             }
         });
-        
-        // Celsius radio button selected
-        cRadio.setOnClickListener(new View.OnClickListener() {
-            
-            @Override
-            public void onClick(View arg0) {
-                setInFahrenheit(false);
-                //setSeconds(25);
-                temperatureText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-                calculateTemperature();
-            }
-        });*/
-
 
         tempToggle.setOnClickListener(new View.OnClickListener() {
 
@@ -182,68 +216,6 @@ public class MainActivity extends Activity {
 
         });
 
-        /*
-        // Number of chirps changed or manually inputted
-        chirpsInput.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                    int arg3) {
-                // Do nothing
-            }
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                String chirps = chirpsInput.getText().toString();
-                
-                // Only parse the value if its not empty (avoids NumberFormatException)
-                if(chirps.equals("")){
-                    setNumChirps(0);
-                }
-                else {
-                    setNumChirps(Integer.parseInt(chirps));
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                    int arg2, int arg3) {
-                // Do nothing
-                
-            }
-        
-        });
-        
-        // Number of seconds changed or manually inputted
-        secondsInput.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                    int arg3) {
-                // Goggles
-            }
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                String secs = secondsInput.getText().toString();
-                
-                if(secs.equals("")){
-                    setNumSeconds(0);
-                }
-                else {
-                    setNumSeconds(Integer.parseInt(secs));
-                }
-                
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                    int arg2, int arg3) {
-                // Do nothing
-            }
-        
-        });
-        */
 
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
 
@@ -288,9 +260,8 @@ public class MainActivity extends Activity {
 
         ss.append(".").append(Long.toString(millisecondsLeft));
         // Set milliseconds to appear in smaller font. Strings added to the beginning are EXCLUDED,
-        // any appended after are INCLUDED
+        // any appended after are INCLUDED in the formatting
         ss.setSpan(new RelativeSizeSpan(0.75f), ssLeft.length(), ss.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-        //ss.append("s");
 
         countdownText.setText(ss);
     }
@@ -340,11 +311,12 @@ public class MainActivity extends Activity {
     private void startChronometer() {
         startChronometer(SystemClock.elapsedRealtime());
     }
-    
+
     private void startChronometer(long base) {
         setChronometerRunning(true);
         chronometer.setBase(base);
 
+        title.setText("Time Remaining");
         temperatureText.setVisibility(View.GONE);
         countdownText.setVisibility(View.VISIBLE);
 
@@ -353,7 +325,7 @@ public class MainActivity extends Activity {
 
         chronometer.start();
     }
-    
+
     private void stopChronometer() {
         chronometer.stop();
         setChronometerRunning(false);
@@ -362,60 +334,119 @@ public class MainActivity extends Activity {
 
         countdownText.setVisibility(View.GONE);
         temperatureText.setVisibility(View.VISIBLE);
+        title.setText("Temperature");
 
         tempToggle.setVisibility(View.VISIBLE);
         tempToggle.setEnabled(true);
 
         chirpButton.setEnabled(false);
     }
-    
+
     protected void calculateTemperature() {
         double temp;
         double chirps = getNumChirps();
         double seconds = getNumSeconds();
-    
+
         if(chirps <= 0 || seconds <= 0){
             temp = 0;
         }
-        else {        
+        else {
             if(inFahrenheit){
                 temp = chirps/(seconds/14) + 40;
             }
             else {
-                temp = (chirps/(seconds/25))/3 + 4;
+                temp = (chirps / (seconds/25))/3 + 4;
             }
         }
-        
+
         // Cast to an int to remove decimals
         setTemperature((int) temp);
+
+        Log.v(TAG, "Calculated temperature (exact): "+temp);
     }
-    
+
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(TAG, "Play prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+    }
+
+    private void startRecording() {
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(TAG, "Rec prepare() failed");
+        }
+
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+    }
+
+
     protected void setChirps(int c) {
         // Update value
         setNumChirps(c);
-        
+
         // Convert numChirps to a string and update text
         //chirpsInput.setText(""+numChirps);
     }
-    
+
     protected void setSeconds(int s) {
         setNumSeconds(s);
-        
+
         //secondsInput.setText(""+numSeconds);
     }
-    
+
     public int getTemperature() {
         return temperature;
     }
-    
+
     // Set both the temperature value and the text on-screen
     protected void setTemperature(int t) {
         temperature = t;
-        String ttxt = Integer.toString(t) + DEGREE;
+        String ttxt = Integer.toString(t);
+        ttxt += DEGREE;
         temperatureText.setText(ttxt);
     }
-    
-    
+
+
     public long getNumChirps() {
         return numChirps;
     }
@@ -447,7 +478,7 @@ public class MainActivity extends Activity {
     private void setChronometerRunning(boolean chronometerStarted) {
         this.chronometerRunning = chronometerStarted;
     }
-    
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.i(getClass().getSimpleName(), "onSaveInstanceState");
@@ -455,20 +486,20 @@ public class MainActivity extends Activity {
         // Put temperature, button, and chronometer data in bundle
         outState.putInt("temperature", getTemperature());
         outState.putBoolean("inF", isInFahrenheit());
-        
+
         outState.putBoolean("chronoRunning", isChronometerRunning());
         outState.putLong("chronoBase", chronometer.getBase());
-        outState.putString("countdownText", chronometer.getText().toString());
-        
+        outState.putString("tempText", temperatureText.getText().toString());
+
         outState.putBoolean("chirpButtonEnabled", chirpButton.isEnabled());
-        
+
         // Save parent state
         super.onSaveInstanceState(outState);
     }
-    
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.i(getClass().getSimpleName(), "onRestoreInstanceState");
+        Log.i(TAG, "onRestoreInstanceState");
 
         // Restore parent state
         super.onRestoreInstanceState(savedInstanceState);
@@ -478,16 +509,21 @@ public class MainActivity extends Activity {
         {
             // Restore temperature
             setTemperature(savedInstanceState.getInt("temperature"));
+            Log.i(TAG, ("" + savedInstanceState.getInt("temperature")));
             setInFahrenheit(savedInstanceState.getBoolean("inF"));
-            
+
             // Keep the chronometer running, else keep its value
             if(savedInstanceState.getBoolean("chronoRunning")){
                 startChronometer(savedInstanceState.getLong("chronoBase"));
+                temperatureText.setVisibility(View.GONE);
+                countdownText.setVisibility(View.VISIBLE);
             }
             else{
-                chronometer.setText(savedInstanceState.getString("countdownText"));
+                temperatureText.setText(savedInstanceState.getString("tempText"));
+                temperatureText.setVisibility(View.VISIBLE);
+                countdownText.setVisibility(View.GONE);
             }
-            
+
             // Check if the chirp button is disabled
             if(!savedInstanceState.getBoolean("chirpButtonEnabled")){
                 chirpButton.setEnabled(false);
