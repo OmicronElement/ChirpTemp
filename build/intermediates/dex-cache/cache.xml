@@ -2,11 +2,18 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Bryan\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-v4\18.0.0\support-v4-18.0.0.jar"
+        jar="C:\Users\Bryan\StudioProjects\ChirpTemp\lib\musicg-1.4.2.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="44ec51e9d395a47aab135e5e1b556c0007442156">
-        <dex dex="C:\Users\Bryan\StudioProjects\ChirpTemp\app\build\intermediates\pre-dexed\debug\support-v4-18.0.0-3da21c9c53fadbac7fbf34446dd4d686b09664b6.jar" />
+        sha1="e4cc5194d9313717e173c63eb38dd220a63b5532">
+        <dex dex="C:\Users\Bryan\StudioProjects\ChirpTemp\app\build\intermediates\pre-dexed\debug\musicg-1.4.2.0-d72f2cced20ea96efef574b9a1f31410581fa1ee.jar" />
+    </item>
+    <item
+        jar="C:\Users\Bryan\.gradle\caches\modules-2\files-2.1\com.jakewharton\butterknife\7.0.1\d5d13ea991eab0252e3710e5df3d6a9d4b21d461\butterknife-7.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d5d13ea991eab0252e3710e5df3d6a9d4b21d461">
+        <dex dex="C:\Users\Bryan\StudioProjects\ChirpTemp\app\build\intermediates\pre-dexed\debug\butterknife-7.0.1-025d9f5808760f8aed6980cb71b95a5af1fb0dfc.jar" />
     </item>
 
 </items>

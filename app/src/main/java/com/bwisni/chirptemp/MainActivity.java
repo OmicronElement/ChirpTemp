@@ -1,5 +1,6 @@
 package com.bwisni.chirptemp;
 
+import android.media.AudioFormat;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -17,8 +18,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.musicg.wave.Wave;
+import com.musicg.wave.WaveTypeDetector;
+
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends Activity {
 
@@ -34,14 +41,15 @@ public class MainActivity extends Activity {
     //private EditText chirpsInput;
     //private EditText secondsInput;
 
-    private Button chirpButton;
-    private Button resetButton;
-    private Button recordButton;
-    private Button playButton;
+    @Bind(R.id.chirpButton) Button chirpButton;
+    @Bind(R.id.resetButton) Button resetButton;
+    @Bind(R.id.recordButton) Button recordButton;
+    @Bind(R.id.playButton) Button playButton;
+    @Bind(R.id.analyzeButton) Button analyzeButton;
 
     private Chronometer chronometer;
 
-    private MediaRecorder mRecorder = null;
+    private WavAudioRecorder mRecorder = null;
     private MediaPlayer mPlayer = null;
     private String mFileName;
 
@@ -65,20 +73,23 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         // Setup local storage filename
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/chirps.3gp";
+        mFileName += "/chirps.wav";
 
         // Get the external interface components
         temperatureText = (TextView) findViewById(R.id.temperature);
         title = (TextView) findViewById(R.id.title);
 
-
+        /*
         chirpButton = (Button) findViewById(R.id.chirpButton);
         resetButton = (Button) findViewById(R.id.resetButton);
         recordButton = (Button) findViewById(R.id.recordButton);
         playButton = (Button) findViewById(R.id.playButton);
+        analyzeButton = (Button) findViewById(R.id.analyzeButton);
+        */
 
         chronometer = (Chronometer) findViewById(R.id.chrono);
 
@@ -91,130 +102,6 @@ public class MainActivity extends Activity {
         setTemperature(0);
         setInFahrenheit(true);
         setChronometerRunning(false);
-
-        // Init chronometer
-        //chronometer.setText("%s");
-        //chronometer.setFormat("SS");
-
-        // Chirp button pressed
-        chirpButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-                if (numChirps == 0) {
-                    // Set seconds for calculation
-                    if (isInFahrenheit()) {
-                        setSeconds(14);
-                    } else {
-                        setSeconds(25);
-                    }
-
-                    // Start chronometer when the button is pressed for the first time
-                    startChronometer();
-                }
-
-                setNumChirps(getNumChirps() + 1);
-                //setChirps(getNumChirps());
-            }
-        });
-
-        // Reset button
-        resetButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // Restore all values to their default
-                setChirps(0);
-                setTemperature(0);
-
-                calculateTemperature();
-
-                stopChronometer();
-                chronometer.setBase(SystemClock.elapsedRealtime());
-
-                // Re-enable Chirp button
-                chirpButton.setEnabled(true);
-            }
-        });
-
-        // Record button
-        recordButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // Restore all values to their default
-                setChirps(0);
-                setTemperature(0);
-
-
-                stopChronometer();
-                chronometer.setBase(SystemClock.elapsedRealtime());
-
-
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    recordButton.setText("Stop");
-                } else {
-                    recordButton.setText("Record");
-                }
-
-                mStartRecording = !mStartRecording;
-
-                // Re-enable Chirp button
-                chirpButton.setEnabled(false);
-            }
-        });
-
-        // play button
-        playButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-                onPlay(mStartPlaying);
-                if (mStartPlaying) {
-                    playButton.setText("Stop");
-                } else {
-                    playButton.setText("Play");
-                }
-
-                mStartPlaying = !mStartPlaying;
-
-                // Re-enable Chirp button
-                chirpButton.setEnabled(false);
-            }
-        });
-
-        tempToggle.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-                if (isInFahrenheit()) {
-
-                    temperatureText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-
-                    tempToggle.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-                    tempToggle.setText("C");
-
-                    setInFahrenheit(false);
-
-                } else {
-
-                    temperatureText.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
-
-                    tempToggle.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
-                    tempToggle.setText("F");
-
-                    setInFahrenheit(true);
-                }
-
-                calculateTemperature();
-            }
-
-
-        });
 
 
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -241,12 +128,117 @@ public class MainActivity extends Activity {
 
                     setCountdownText(elapsedMillis, MILLISECONDS_C);
                 }
+            }
+        });
+    }
 
+    // Chirp button pressed
+    @OnClick(R.id.chirpButton)
+    public void chirpClick(View arg0){
 
-
+        if (numChirps == 0) {
+            // Set seconds for calculation
+            if (isInFahrenheit()) {
+                setSeconds(14);
+            } else {
+                setSeconds(25);
             }
 
-        });
+            // Start chronometer when the button is pressed for the first time
+            startChronometer();
+        }
+
+        setNumChirps(getNumChirps() + 1);
+        //setChirps(getNumChirps());
+    }
+    // Reset button
+    @OnClick(R.id.resetButton)
+    public void resClick(View arg0){
+        // Restore all values to their default
+        setChirps(0);
+        setTemperature(0);
+
+        calculateTemperature();
+
+        stopChronometer();
+        chronometer.setBase(SystemClock.elapsedRealtime());
+
+        // Re-enable Chirp button
+        chirpButton.setEnabled(true);
+    }
+
+    // Record button
+    @OnClick(R.id.recordButton)
+    public void recClick(View arg0) {
+        // Restore all values to their default
+        setChirps(0);
+        setTemperature(0);
+
+
+        stopChronometer();
+        chronometer.setBase(SystemClock.elapsedRealtime());
+
+
+        onRecord(mStartRecording);
+        if (mStartRecording) {
+            recordButton.setText("Stop");
+        } else {
+            recordButton.setText("Record");
+        }
+
+        mStartRecording = !mStartRecording;
+
+        // Re-enable Chirp button
+        chirpButton.setEnabled(false);
+    }
+
+    // play button
+    @OnClick(R.id.playButton)
+    public void playClick(View arg0) {
+
+        onPlay(mStartPlaying);
+        if (mStartPlaying) {
+            playButton.setText("Stop");
+        } else {
+            playButton.setText("Play");
+        }
+
+        mStartPlaying = !mStartPlaying;
+    }
+
+    // analyze button
+    @OnClick(R.id.analyzeButton)
+    public void anaClick(View arg0) {
+
+        double chirps = analyzeWav();
+        temperatureText.setText("" + chirps);
+
+    }
+
+
+    @OnClick(R.id.scaleToggle)
+    public void togClick(View arg0) {
+
+        if (isInFahrenheit()) {
+
+            temperatureText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+
+            tempToggle.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+            tempToggle.setText("C");
+
+            setInFahrenheit(false);
+
+        } else {
+
+            temperatureText.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
+
+            tempToggle.setTextColor(getResources().getColor(android.R.color.holo_blue_light));
+            tempToggle.setText("F");
+
+            setInFahrenheit(true);
+        }
+
+        calculateTemperature();
     }
 
     // Builds formatted SpannableString showing remaining seconds and milliseconds,
@@ -362,7 +354,7 @@ public class MainActivity extends Activity {
         // Cast to an int to remove decimals
         setTemperature((int) temp);
 
-        Log.v(TAG, "Calculated temperature (exact): "+temp);
+        Log.v(TAG, "Calculated temperature (exact): " + temp);
     }
 
     private void onRecord(boolean start) {
@@ -376,6 +368,7 @@ public class MainActivity extends Activity {
     private void onPlay(boolean start) {
         if (start) {
             startPlaying();
+
         } else {
             stopPlaying();
         }
@@ -397,18 +390,26 @@ public class MainActivity extends Activity {
         mPlayer = null;
     }
 
-    private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+    private double analyzeWav(){
+        double chirps = 0;
+        Wave wave = new Wave(mFileName);
 
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(TAG, "Rec prepare() failed");
+        if (wave != null) {
+            WaveTypeDetector waveTypeDetector = new WaveTypeDetector(wave);
+            chirps = waveTypeDetector.getWhistleProbability();
         }
+
+        return chirps;
+    }
+
+    private void startRecording() {
+        mRecorder = new WavAudioRecorder(MediaRecorder.AudioSource.MIC, 44100,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+
+        mRecorder.setOutputFile(mFileName);
+
+
+        mRecorder.prepare();
 
         mRecorder.start();
     }

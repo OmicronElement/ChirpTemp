@@ -25,6 +25,7 @@
     <string name="F">Fahrenheit</string>
     <string name="Seconds">Seconds</string>
     <string name="action_settings">Settings</string>
+    <string name="analyzeString">Analyze</string>
     <string name="app_name">ChirpTemp</string>
     <string name="bigButton">Chirp</string>
     <string name="calc">Calculate</string>

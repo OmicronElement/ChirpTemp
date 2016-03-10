@@ -23,5 +23,6 @@
     <string name="chirps">Chirps</string>
     <string name="unit">F</string>
     <string name="Seconds">Seconds</string>
+    <string name="analyzeString">Analyze</string>
 
 </resources>
